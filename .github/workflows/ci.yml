@@ -47,6 +47,12 @@ jobs:
           name: cypress-videos
           path: cypress/videos
           if-no-files-found: ignore
+
+      - name: Create index.html for GitHub Pages
+        if: always()
+        run: |
+          echo '<html><head><meta http-equiv="refresh" content="0; url=./mochawesome.html"></head><body><p>Redirecting to Mochawesome report...</p></body></html>' > cypress/reports/mochawesome-report/index.html
+          ls -la cypress/reports/mochawesome-report
       
       - name: Deploy Mochawesome Report to GitHub Pages
         if: always()
@@ -61,8 +67,3 @@ jobs:
           force_orphan: true
         env:
           DEBUG: actions-gh-pages
-
-      - name: Create index.html for GitHub Pages
-        if: always()
-        run: |
-          echo '<html><head><meta http-equiv="refresh" content="0; url=./mochawesome.html"></head><body><p>Redirecting to Mochawesome report...</p></body></html>' > cypress/reports/mochawesome-report/index.html
