@@ -31,13 +31,6 @@ jobs:
         with:
           command: npm run cy:report
       
-      - name: Archive Mochawesome Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: mochawesome-report
-          path: cypress/reports/mochawesome-report/mochawesome.html
-          if-no-files-found: ignore
-
       - name: Debug Report Files
         run: ls -la cypress/reports cypress/reports/mochawesome-report || echo "Pasta não encontrada"
       
@@ -58,10 +51,12 @@ jobs:
       - name: Create index.html for GitHub Pages
         if: always()
         run: |
-          echo '<html><head><meta http-equiv="refresh" content="0; url=./mochawesome.html"></head><body><p>Redirecting to Mochawesome report...</p></body></html>' > cypress/reports/mochawesome-report/index.html
+          mkdir -p cypress/reports/mochawesome-report/reports/${{ github.run_id }}
+          mv cypress/reports/mochawesome-report/mochawesome.html cypress/reports/mochawesome-report/reports/${{ github.run_id }}/mochawesome.html
+          echo '<html><head><title>Cypress Test Reports</title><style>body { font-family: Arial, sans-serif; text-align: center; padding: 50px; } a { color: #007bff; text-decoration: none; } a:hover { text-decoration: underline; }</style></head><body><h1>Cypress Test Reports</h1><ul><li><a href="reports/${{ github.run_id }}/mochawesome.html">Report ${{ github.run_id }}</a></li></ul></body></html>' > cypress/reports/mochawesome-report/index.html
           ls -la cypress/reports/mochawesome-report
           cat cypress/reports/mochawesome-report/index.html
-          ls -la cypress/reports/mochawesome-report/mochawesome.html || echo "mochawesome.html não encontrado"
+          ls -la cypress/reports/mochawesome-report/reports/${{ github.run_id }} || echo "mochawesome.html não encontrado"
       
       - name: Deploy Mochawesome Report to GitHub Pages
         if: always()
@@ -69,7 +64,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./cypress/reports/mochawesome-report
-          destination_dir: reports/${{ github.run_id }}
+          destination_dir: .
           publish_branch: gh-pages
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
