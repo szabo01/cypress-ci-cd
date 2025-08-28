@@ -1,0 +1,18 @@
+{
+  "name": "cypress-ci-cd",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "cy:report": "cypress run --reporter cypress-mochawesome-reporter"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "cypress": "^15.0.0"
+  },
+  "devDependencies": {
+    "cypress-mochawesome-reporter": "^4.0.2"
+  }
+}
