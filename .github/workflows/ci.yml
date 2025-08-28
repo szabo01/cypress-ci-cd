@@ -53,7 +53,15 @@ jobs:
         run: |
           mkdir -p cypress/reports/mochawesome-report/reports/${{ github.run_id }}
           mv cypress/reports/mochawesome-report/mochawesome.html cypress/reports/mochawesome-report/reports/${{ github.run_id }}/mochawesome.html
-          echo '<html><head><title>Cypress Test Reports</title><style>body { font-family: Arial, sans-serif; text-align: center; padding: 50px; } a { color: #007bff; text-decoration: none; } a:hover { text-decoration: underline; }</style></head><body><h1>Cypress Test Reports</h1><ul><li><a href="reports/${{ github.run_id }}/mochawesome.html">Report ${{ github.run_id }}</a></li></ul></body></html>' > cypress/reports/mochawesome-report/index.html
+          # Cria ou atualiza index.html com uma lista
+          echo '<html><head><title>Cypress Test Reports</title><style>body { font-family: Arial, sans-serif; text-align: center; padding: 50px; } a { color: #007bff; text-decoration: none; } a:hover { text-decoration: underline; }</style></head><body><h1>Cypress Test Reports</h1><ul>' > cypress/reports/mochawesome-report/index.html
+          echo '<li><a href="reports/${{ github.run_id }}/mochawesome.html">Report ${{ github.run_id }}</a></li>' >> cypress/reports/mochawesome-report/index.html
+          # Adiciona links de relatórios anteriores, se existirem
+          if [ -f cypress/reports/mochawesome-report/previous_index.html ]; then
+            grep '<li><a href="reports/' cypress/reports/mochawesome-report/previous_index.html >> cypress/reports/mochawesome-report/index.html || true
+          fi
+          echo '</ul></body></html>' >> cypress/reports/mochawesome-report/index.html
+          cp cypress/reports/mochawesome-report/index.html cypress/reports/mochawesome-report/previous_index.html
           ls -la cypress/reports/mochawesome-report
           cat cypress/reports/mochawesome-report/index.html
           ls -la cypress/reports/mochawesome-report/reports/${{ github.run_id }} || echo "mochawesome.html não encontrado"
