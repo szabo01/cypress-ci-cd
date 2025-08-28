@@ -31,6 +31,13 @@ jobs:
         with:
           command: npm run cy:report
       
+      - name: Archive Mochawesome Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: mochawesome-report
+          path: cypress/reports/mochawesome-report/mochawesome.html
+          if-no-files-found: ignore
+          
       - name: Debug Report Files
         run: ls -la cypress/reports cypress/reports/mochawesome-report || echo "Pasta não encontrada"
       
