@@ -40,12 +40,19 @@ jobs:
       - name: Create index.html for GitHub Pages
         if: always()
         run: |
-          mkdir -p cypress/reports/mochawesome-report/reports/${{ github.run_id }}
-          mv cypress/reports/mochawesome-report/mochawesome.html cypress/reports/mochawesome-report/reports/${{ github.run_id }}/mochawesome.html
-          echo '<html><head><title>Cypress Test Reports</title><style>body { font-family: Arial, sans-serif; text-align: center; padding: 50px; } a { color: #007bff; text-decoration: none; } a:hover { text-decoration: underline; }</style></head><body><h1>Cypress Test Reports</h1><ul><li><a href="reports/${{ github.run_id }}/mochawesome.html">Report ${{ github.run_id }}</a></li></ul></body></html>' > cypress/reports/mochawesome-report/index.html
-          ls -la cypress/reports/mochawesome-report
-          cat cypress/reports/mochawesome-report/index.html
-          ls -la cypress/reports/mochawesome-report/reports/${{ github.run_id }} || echo "mochawesome.html não encontrado"
+            mkdir -p cypress/reports/mochawesome-report/reports/${{ github.run_id }}
+            mv cypress/reports/mochawesome-report/mochawesome.html cypress/reports/mochawesome-report/reports/${{ github.run_id }}/mochawesome.html || echo "mochawesome.html não encontrado"
+            echo '<html><head><title>Cypress Test Reports</title><style>body { font-family: Arial, sans-serif; text-align: center; padding: 50px; } a { color: #007bff; text-decoration: none; } a:hover { text-decoration: underline; }</style></head><body><h1>Cypress Test Reports</h1><ul><li><a href="reports/${{ github.run_id }}/mochawesome.html">Report ${{ github.run_id }}</a></li></ul></body></html>' > cypress/reports/mochawesome-report/index.html
+            ls -la cypress/reports/mochawesome-report
+            cat cypress/reports/mochawesome-report/index.html
+            ls -la cypress/reports/mochawesome-report/reports/${{ github.run_id }} || echo "mochawesome.html não encontrado"
+
+      - name: Debug Git Config
+            run: |
+              git config --global user.name "github-actions[bot]"
+              git config --global user.email "github-actions[bot]@users.noreply.github.com"
+              git remote -v
+              echo "GITHUB_TOKEN is set: ${GITHUB_TOKEN:0:5}..."
       
       - name: Deploy Mochawesome Report to GitHub Pages
         if: always()
