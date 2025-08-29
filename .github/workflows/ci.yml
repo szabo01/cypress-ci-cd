@@ -48,11 +48,11 @@ jobs:
             ls -la cypress/reports/mochawesome-report/reports/${{ github.run_id }} || echo "mochawesome.html não encontrado"
 
       - name: Debug Git Config
-            run: |
-              git config --global user.name "github-actions[bot]"
-              git config --global user.email "github-actions[bot]@users.noreply.github.com"
-              git remote -v
-              echo "GITHUB_TOKEN is set: ${GITHUB_TOKEN:0:5}..."
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git remote -v
+          echo "GITHUB_TOKEN is set: ${GITHUB_TOKEN:0:5}..."
       
       - name: Deploy Mochawesome Report to GitHub Pages
         if: always()
