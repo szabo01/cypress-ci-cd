@@ -11,41 +11,30 @@ on:
 jobs:
   cypress-run:
     runs-on: ubuntu-24.04
-    permissions:
-      contents: write
-      actions: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       
-      - name: Cache node modules
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
       
-      - name: Cypress run
-        uses: cypress-io/github-action@v6
-        with:
-          command: npm run cy:report
+      - name: Build Docker image
+        run: docker build -t cypress-ci-cd .
+      
+      - name: Run Cypress in Docker
+        run: docker run --rm -v $(pwd):/app cypress-ci-cd npm run cy:report
       
       - name: Debug Report Files
         run: ls -la cypress/reports cypress/reports/mochawesome-report || echo "Pasta não encontrada"
       
-      - uses: actions/upload-artifact@v4
+      - name: Upload Cypress Artifacts on Failure
         if: failure()
+        uses: actions/upload-artifact@v4
         with:
-          name: cypress-screenshots
-          path: cypress/screenshots
-          if-no-files-found: ignore
-      
-      - uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: cypress-videos
-          path: cypress/videos
+          name: cypress-artifacts
+          path: |
+            cypress/screenshots
+            cypress/videos
           if-no-files-found: ignore
       
       - name: Create index.html for GitHub Pages
@@ -53,15 +42,7 @@ jobs:
         run: |
           mkdir -p cypress/reports/mochawesome-report/reports/${{ github.run_id }}
           mv cypress/reports/mochawesome-report/mochawesome.html cypress/reports/mochawesome-report/reports/${{ github.run_id }}/mochawesome.html
-          # Cria ou atualiza index.html com uma lista
-          echo '<html><head><title>Cypress Test Reports</title><style>body { font-family: Arial, sans-serif; text-align: center; padding: 50px; } a { color: #007bff; text-decoration: none; } a:hover { text-decoration: underline; }</style></head><body><h1>Cypress Test Reports</h1><ul>' > cypress/reports/mochawesome-report/index.html
-          echo '<li><a href="reports/${{ github.run_id }}/mochawesome.html">Report ${{ github.run_id }}</a></li>' >> cypress/reports/mochawesome-report/index.html
-          # Adiciona links de relatórios anteriores, se existirem
-          if [ -f cypress/reports/mochawesome-report/previous_index.html ]; then
-            grep '<li><a href="reports/' cypress/reports/mochawesome-report/previous_index.html >> cypress/reports/mochawesome-report/index.html || true
-          fi
-          echo '</ul></body></html>' >> cypress/reports/mochawesome-report/index.html
-          cp cypress/reports/mochawesome-report/index.html cypress/reports/mochawesome-report/previous_index.html
+          echo '<html><head><title>Cypress Test Reports</title><style>body { font-family: Arial, sans-serif; text-align: center; padding: 50px; } a { color: #007bff; text-decoration: none; } a:hover { text-decoration: underline; }</style></head><body><h1>Cypress Test Reports</h1><ul><li><a href="reports/${{ github.run_id }}/mochawesome.html">Report ${{ github.run_id }}</a></li></ul></body></html>' > cypress/reports/mochawesome-report/index.html
           ls -la cypress/reports/mochawesome-report
           cat cypress/reports/mochawesome-report/index.html
           ls -la cypress/reports/mochawesome-report/reports/${{ github.run_id }} || echo "mochawesome.html não encontrado"
