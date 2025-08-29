@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 COPY cypress.config.js ./
 COPY cypress ./cypress
-COPY cypress/support ./cypress/suport
+COPY cypress/support ./cypress/support
 
 # Instalar dependências
 RUN npm install
