@@ -9,9 +9,9 @@
   "author": "",
   "license": "ISC",
   "description": "",
-  "dependencies": {
-    "cypress": "^15.0.0",
+  "dependencies": {},
+  "devDependencies": {
+    "cypress": "13.15.0",
     "cypress-mochawesome-reporter": "^4.0.2"
-  },
-  "devDependencies": {}
+  }
 }
