@@ -13,8 +13,9 @@ pipeline {
             steps {
                 sh '''
                     mkdir -p /tmp/npm-cache
+                    rm -rf node_modules package-lock.json
                     npm cache clean --force
-                    npm install
+                    npm install --no-audit --no-fund
                 '''
             }
         }
