@@ -2,16 +2,18 @@ pipeline {
     agent {
         docker {
             image 'cypress/included:13.15.0'
-            args '--entrypoint=""'
+            args '--entrypoint="" -u 0:0' // Roda como root para evitar problemas de permissões
         }
     }
     environment {
         NPM_CONFIG_CACHE = '/tmp/npm-cache'
+        HOME = '/tmp' // Define HOME para evitar problemas com fontconfig
     }
     stages {
         stage('Install Dependencies') {
             steps {
                 sh '''
+                    apt-get update && apt-get install -y libdbus-1-3 fontconfig
                     mkdir -p /tmp/npm-cache
                     rm -rf node_modules package-lock.json
                     npm cache clean --force
