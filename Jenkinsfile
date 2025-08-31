@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'cypress/included:15.0.0'
+            image 'cypress/included:13.15.0'
             args '--entrypoint=""'
         }
     }
@@ -13,6 +13,7 @@ pipeline {
             steps {
                 sh '''
                     mkdir -p /tmp/npm-cache
+                    npm cache clean --force
                     npm install
                 '''
             }
@@ -24,7 +25,7 @@ pipeline {
         }
         stage('Archive Reports') {
             steps {
-                archiveArtifacts artifacts: 'cypress/reports/mochawesome-report/*.html', allowEmptyArchive: true
+                archiveArtifacts artifacts: 'cypress/reports/html/*.html', allowEmptyArchive: true
             }
         }
     }
