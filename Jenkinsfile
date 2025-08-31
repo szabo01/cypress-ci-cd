@@ -5,15 +5,16 @@ pipeline {
             args '--entrypoint=""'
         }
     }
+    environment {
+        NPM_CONFIG_CACHE = '/tmp/npm-cache'
+    }
     stages {
-        stage('Checkout') {
-            steps {
-                git url: 'https://github.com/szabo01/cypress-ci-cd.git', branch: 'feature/cypress-pipeline'
-            }
-        }
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                sh '''
+                    mkdir -p /tmp/npm-cache
+                    npm install
+                '''
             }
         }
         stage('Run Cypress Tests') {
@@ -25,18 +26,6 @@ pipeline {
             steps {
                 archiveArtifacts artifacts: 'cypress/reports/mochawesome-report/*.html', allowEmptyArchive: true
             }
-        }
-    }
-    post {
-        always {
-            publishHTML(target: [
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: 'cypress/reports/mochawesome-report',
-                reportFiles: 'mochawesome.html',
-                reportName: 'Relatório de Testes Cypress'
-            ])
         }
     }
 }
