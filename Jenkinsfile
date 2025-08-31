@@ -25,8 +25,20 @@ pipeline {
         }
         stage('Archive Reports') {
             steps {
-                archiveArtifacts artifacts: 'cypress/reports/html/*.html', allowEmptyArchive: true
+                archiveArtifacts artifacts: 'cypress/reports/mochawesome-report/*.html', allowEmptyArchive: true
             }
+        }
+    }
+    post {
+        always {
+            publishHTML(target: [
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'cypress/reports/mochawesome-report',
+                reportFiles: 'mochawesome.html',
+                reportName: 'Relatório de Testes Cypress'
+            ])
         }
     }
 }
