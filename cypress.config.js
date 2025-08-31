@@ -10,7 +10,7 @@ module.exports = defineConfig({
     inlineAssets: true,
     overwrite: true,
     html: true,
-    json: true
+    json: false
   },
   e2e: {
     setupNodeEvents(on, config) {
