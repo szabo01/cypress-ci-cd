@@ -2,16 +2,22 @@ pipeline {
     agent {
         docker {
             image 'cypress/included:13.15.0'
-            args '--entrypoint="" -u 0:0 --privileged -v /tmp/.X11-unix:/tmp/.X11-unix' // Adiciona suporte a X11
+            args '--entrypoint="" -u 0:0 --privileged -v /tmp/.X11-unix:/tmp/.X11-unix'
         }
     }
     environment {
         NPM_CONFIG_CACHE = '/tmp/npm-cache'
-        HOME = '/tmp' // Define HOME para fontconfig
-        DISPLAY = ':0' // Define DISPLAY para Electron
-        FONTCONFIG_PATH = '/etc/fonts' // Define caminho para fontconfig
+        HOME = '/tmp'
+        DISPLAY = ':0'
+        FONTCONFIG_PATH = '/etc/fonts'
     }
     stages {
+        stage('Checkout') {
+            steps {
+                cleanWs() // Limpa o workspace antes do checkout
+                checkout scm // Faz o checkout do repositório
+            }
+        }
         stage('Install Dependencies') {
             steps {
                 sh '''
@@ -38,14 +44,16 @@ pipeline {
     }
     post {
         always {
-            publishHTML(target: [
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: 'cypress/reports/mochawesome-report',
-                reportFiles: 'mochawesome.html',
-                reportName: 'Relatório de Testes Cypress'
-            ])
+            node('master') { // Adiciona um node para o publishHTML
+                publishHTML(target: [
+                    allowMissing: true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: 'cypress/reports/mochawesome-report',
+                    reportFiles: 'mochawesome.html',
+                    reportName: 'Relatório de Testes Cypress'
+                ])
+            }
         }
     }
 }
