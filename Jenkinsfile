@@ -15,7 +15,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 sh '''
-                    rm -rf /var/jenkins_home/workspace/cypress-ci-cd/cypress/reports/mochawesome-report/*
+                    rm -rf /var/jenkins_home/workspace/cypress-ci-cd/*
                     rm -rf /var/jenkins_home/workspace/cypress-ci-cd/.git
                 '''
                 cleanWs()
