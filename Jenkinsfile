@@ -14,7 +14,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                cleanWs() // Limpa o workspace antes do checkout
+                sh 'rm -rf cypress/reports/mochawesome-report/*' // Remove arquivos do relatório para evitar conflitos
+                cleanWs() // Limpa o workspace
                 checkout scm // Faz o checkout do repositório
             }
         }
@@ -27,13 +28,14 @@ pipeline {
                     mkdir -p /run/dbus
                     rm -rf node_modules package-lock.json
                     npm cache clean --force
-                    npm install --no-audit --no-fund
+                    npm install --no-audit --no-fund --cache /tmp/npm-cache
                 '''
             }
         }
         stage('Run Cypress Tests') {
             steps {
                 sh 'npm run cy:report'
+                sh 'chmod -R 777 cypress/reports/mochawesome-report' // Corrige permissões do relatório
             }
         }
         stage('Archive Reports') {
@@ -44,7 +46,7 @@ pipeline {
     }
     post {
         always {
-            node('master') { // Adiciona um node para o publishHTML
+            node('built-in') { // Usa o label correto do nó padrão
                 publishHTML(target: [
                     allowMissing: true,
                     alwaysLinkToLastBuild: true,
