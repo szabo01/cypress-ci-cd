@@ -14,9 +14,12 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                sh 'rm -rf cypress/reports/mochawesome-report/*' // Remove arquivos do relatório para evitar conflitos
-                cleanWs() // Limpa o workspace
-                checkout scm // Faz o checkout do repositório
+                sh '''
+                    rm -rf /var/jenkins_home/workspace/cypress-ci-cd/cypress/reports/mochawesome-report/*
+                    rm -rf /var/jenkins_home/workspace/cypress-ci-cd/.git
+                '''
+                cleanWs()
+                checkout scm
             }
         }
         stage('Install Dependencies') {
@@ -35,7 +38,7 @@ pipeline {
         stage('Run Cypress Tests') {
             steps {
                 sh 'npm run cy:report'
-                sh 'chmod -R 777 cypress/reports/mochawesome-report' // Corrige permissões do relatório
+                sh 'chmod -R 777 cypress/reports/mochawesome-report'
             }
         }
         stage('Archive Reports') {
@@ -46,7 +49,7 @@ pipeline {
     }
     post {
         always {
-            node('built-in') { // Usa o label correto do nó padrão
+            node('built-in') {
                 publishHTML(target: [
                     allowMissing: true,
                     alwaysLinkToLastBuild: true,
