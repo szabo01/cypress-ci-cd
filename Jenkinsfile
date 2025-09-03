@@ -11,11 +11,14 @@ pipeline {
                     ls -la /var/jenkins_home/workspace || echo "Directory /var/jenkins_home/workspace does not exist"
                     ls -la /var/jenkins_home/workspace/cypress-ci-cd || echo "Directory /var/jenkins_home/workspace/cypress-ci-cd does not exist"
                     ls -la /var/jenkins_home/workspace/cypress-ci-cd@script || echo "Directory /var/jenkins_home/workspace/cypress-ci-cd@script does not exist"
+                    ls -la /var/lib/jenkins/workspace || echo "Directory /var/lib/jenkins/workspace does not exist"
                     rm -rf /var/jenkins_home/workspace/cypress-ci-cd*
+                    rm -rf /var/lib/jenkins/workspace/cypress-ci-cd* 2>/dev/null || echo "Cannot remove /var/lib/jenkins/workspace/cypress-ci-cd*"
                     mkdir -p /var/jenkins_home/workspace/cypress-ci-cd
                     chmod -R 777 /var/jenkins_home/workspace
                     echo "Listing workspaces after cleanup:"
                     ls -la /var/jenkins_home/workspace/cypress-ci-cd
+                    ls -la /var/lib/jenkins/workspace/cypress-ci-cd || echo "Directory /var/lib/jenkins/workspace/cypress-ci-cd does not exist"
                     echo "Searching for mochawesome.html after cleanup:"
                     find / -name mochawesome.html 2>/dev/null || echo "mochawesome.html not found"
                 '''
@@ -43,16 +46,26 @@ pipeline {
                             echo "Listing workspaces before checkout:"
                             ls -la /var/jenkins_home/workspace/cypress-ci-cd || echo "Directory /var/jenkins_home/workspace/cypress-ci-cd does not exist"
                             ls -la /var/jenkins_home/workspace/cypress-ci-cd@script || echo "Directory /var/jenkins_home/workspace/cypress-ci-cd@script does not exist"
+                            ls -la /var/lib/jenkins/workspace/cypress-ci-cd || echo "Directory /var/lib/jenkins/workspace/cypress-ci-cd does not exist"
                             rm -rf /var/jenkins_home/workspace/cypress-ci-cd*
+                            rm -rf /var/lib/jenkins/workspace/cypress-ci-cd* 2>/dev/null || echo "Cannot remove /var/lib/jenkins/workspace/cypress-ci-cd*"
                             mkdir -p /var/jenkins_home/workspace/cypress-ci-cd
                             chmod -R 777 /var/jenkins_home/workspace
                             echo "Listing workspaces after cleanup:"
                             ls -la /var/jenkins_home/workspace/cypress-ci-cd
+                            ls -la /var/lib/jenkins/workspace/cypress-ci-cd || echo "Directory /var/lib/jenkins/workspace/cypress-ci-cd does not exist"
                             echo "Searching for mochawesome.html after cleanup:"
                             find / -name mochawesome.html 2>/dev/null || echo "mochawesome.html not found"
                         '''
                         cleanWs()
-                        checkout scm
+                        checkout([$class: 'GitSCM', branches: [[name: '*/feature/cypress-pipeline']], userRemoteConfigs: [[url: 'https://github.com/szabo01/cypress-ci-cd.git']], extensions: [[$class: 'CleanBeforeCheckout']]])
+                        sh '''
+                            echo "Listing workspaces after checkout:"
+                            ls -la /var/jenkins_home/workspace/cypress-ci-cd || echo "Directory /var/jenkins_home/workspace/cypress-ci-cd does not exist"
+                            ls -la /var/lib/jenkins/workspace/cypress-ci-cd || echo "Directory /var/lib/jenkins/workspace/cypress-ci-cd does not exist"
+                            echo "Searching for mochawesome.html after checkout:"
+                            find / -name mochawesome.html 2>/dev/null || echo "mochawesome.html not found"
+                        '''
                     }
                 }
                 stage('Install Dependencies') {
