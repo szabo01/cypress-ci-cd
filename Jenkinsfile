@@ -5,11 +5,19 @@ pipeline {
             agent { node 'built-in' }
             steps {
                 sh '''
-                    sudo rm -rf /var/lib/jenkins/workspace/cypress-ci-cd
-                    sudo mkdir -p /var/lib/jenkins/workspace/cypress-ci-cd
-                    sudo chown -R jenkins:jenkins /var/lib/jenkins/workspace
-                    sudo chmod -R 777 /var/lib/jenkins/workspace
-                    ls -la /var/lib/jenkins/workspace/cypress-ci-cd
+                    echo "Searching for mochawesome.html before cleanup:"
+                    find / -name mochawesome.html 2>/dev/null || echo "mochawesome.html not found"
+                    echo "Listing workspaces before cleanup:"
+                    ls -la /var/jenkins_home/workspace || echo "Directory /var/jenkins_home/workspace does not exist"
+                    ls -la /var/jenkins_home/workspace/cypress-ci-cd || echo "Directory /var/jenkins_home/workspace/cypress-ci-cd does not exist"
+                    ls -la /var/jenkins_home/workspace/cypress-ci-cd@script || echo "Directory /var/jenkins_home/workspace/cypress-ci-cd@script does not exist"
+                    rm -rf /var/jenkins_home/workspace/cypress-ci-cd*
+                    mkdir -p /var/jenkins_home/workspace/cypress-ci-cd
+                    chmod -R 777 /var/jenkins_home/workspace
+                    echo "Listing workspaces after cleanup:"
+                    ls -la /var/jenkins_home/workspace/cypress-ci-cd
+                    echo "Searching for mochawesome.html after cleanup:"
+                    find / -name mochawesome.html 2>/dev/null || echo "mochawesome.html not found"
                 '''
             }
         }
@@ -30,8 +38,18 @@ pipeline {
                 stage('Checkout') {
                     steps {
                         sh '''
-                            sudo rm -rf /var/jenkins_home/workspace/cypress-ci-cd/*
+                            echo "Searching for mochawesome.html before checkout:"
+                            find / -name mochawesome.html 2>/dev/null || echo "mochawesome.html not found"
+                            echo "Listing workspaces before checkout:"
+                            ls -la /var/jenkins_home/workspace/cypress-ci-cd || echo "Directory /var/jenkins_home/workspace/cypress-ci-cd does not exist"
+                            ls -la /var/jenkins_home/workspace/cypress-ci-cd@script || echo "Directory /var/jenkins_home/workspace/cypress-ci-cd@script does not exist"
+                            rm -rf /var/jenkins_home/workspace/cypress-ci-cd*
+                            mkdir -p /var/jenkins_home/workspace/cypress-ci-cd
+                            chmod -R 777 /var/jenkins_home/workspace
+                            echo "Listing workspaces after cleanup:"
                             ls -la /var/jenkins_home/workspace/cypress-ci-cd
+                            echo "Searching for mochawesome.html after cleanup:"
+                            find / -name mochawesome.html 2>/dev/null || echo "mochawesome.html not found"
                         '''
                         cleanWs()
                         checkout scm
