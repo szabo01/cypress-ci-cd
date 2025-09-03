@@ -5,10 +5,11 @@ pipeline {
             agent { node 'built-in' }
             steps {
                 sh '''
-                    rm -rf /var/lib/jenkins/workspace/cypress-ci-cd
-                    mkdir -p /var/lib/jenkins/workspace/cypress-ci-cd
-                    chown -R jenkins:jenkins /var/lib/jenkins/workspace
-                    chmod -R 777 /var/lib/jenkins/workspace
+                    sudo rm -rf /var/lib/jenkins/workspace/cypress-ci-cd
+                    sudo mkdir -p /var/lib/jenkins/workspace/cypress-ci-cd
+                    sudo chown -R jenkins:jenkins /var/lib/jenkins/workspace
+                    sudo chmod -R 777 /var/lib/jenkins/workspace
+                    ls -la /var/lib/jenkins/workspace/cypress-ci-cd
                 '''
             }
         }
@@ -28,7 +29,10 @@ pipeline {
             stages {
                 stage('Checkout') {
                     steps {
-                        sh 'sudo rm -rf /var/jenkins_home/workspace/cypress-ci-cd/*'
+                        sh '''
+                            sudo rm -rf /var/jenkins_home/workspace/cypress-ci-cd/*
+                            ls -la /var/jenkins_home/workspace/cypress-ci-cd
+                        '''
                         cleanWs()
                         checkout scm
                     }
