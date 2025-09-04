@@ -14,10 +14,9 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies & Run Tests') {
+        stage('Run Cypress Tests') {
             steps {
                 script {
-                    // Tudo dentro do container do Cypress
                     docker.image('cypress/included:13.15.0').inside {
                         echo "Preparando ambiente e rodando testes..."
 
