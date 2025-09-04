@@ -14,27 +14,24 @@ pipeline {
             }
         }
 
-        stage('Prepare Environment') {
+        stage('Install Dependencies & Run Tests') {
             steps {
                 script {
+                    // Tudo dentro do container do Cypress
                     docker.image('cypress/included:13.15.0').inside {
-                        echo "Preparando ambiente..."
-                        sh '''
-                            rm -rf node_modules package-lock.json
-                            mkdir -p /tmp/npm-cache
-                            npm install --no-audit --no-fund --cache /tmp/npm-cache
-                        '''
-                    }
-                }
-            }
-        }
+                        echo "Preparando ambiente e rodando testes..."
 
-        stage('Run Cypress Tests') {
-            steps {
-                script {
-                    docker.image('cypress/included:13.15.0').inside {
-                        echo "Rodando Cypress com Mochawesome..."
                         sh '''
+                            # Limpa node_modules e package-lock.json
+                            rm -rf node_modules package-lock.json
+
+                            # Cria cache temporário para npm
+                            mkdir -p /tmp/npm-cache
+
+                            # Instala dependências
+                            npm install --no-audit --no-fund --cache /tmp/npm-cache
+
+                            # Executa Cypress sem paralelização, com Mochawesome
                             npx cypress run \
                             --reporter mochawesome \
                             --reporter-options reportDir=$REPORT_DIR,reportFilename=mochawesome,overwrite=false,html=true,json=true \
@@ -54,7 +51,6 @@ pipeline {
 
     post {
         always {
-            echo "Limpando workspace..."
             cleanWs()
         }
     }
