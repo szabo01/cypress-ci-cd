@@ -7,5 +7,4 @@ RUN npm install
 
 COPY . .
 
-RUN cp -r node_modules /root/.cache/Cypress/15.0.0/Cypress/resources/app
-
+RUN npm install -g cypress-mochawesome-reporter
