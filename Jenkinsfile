@@ -49,6 +49,7 @@ pipeline {
                     cypress-ci-cd:${env.BUILD_ID} \
                     sh -c '
                         npm run cy:report
+                        mv /app/mochawesome-report/mochawesome.html /app/cypress/reports/mochawesome-report/
                         echo "Verificando relatório gerado dentro do container..."
                         find /app -name "mochawesome.html"
                         test -f /app/cypress/reports/mochawesome-report/mochawesome.html && echo "Relatório gerado com sucesso." || echo "Relatório não encontrado."
