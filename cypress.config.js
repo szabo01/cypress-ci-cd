@@ -1,10 +1,8 @@
-const path = require('path');
-
 module.exports = {
   reporter: 'cypress-mochawesome-reporter',
   e2e: {
     setupNodeEvents(on, config) {
-      require(path.resolve('node_modules/cypress-mochawesome-reporter/plugin'))(on);
+      require('cypress-mochawesome-reporter/plugin')(on);
       return config;
     },
     specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
