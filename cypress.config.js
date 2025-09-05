@@ -1,9 +1,19 @@
 module.exports = {
+  reporterOptions: {
+    reportDir: 'cypress/reports/mochawesome-report',
+    overwrite: false,
+    html: false,
+    json: true,
+    charts: true,
+    embeddedScreenshots: true,
+    inlineAssets: true,
+    saveAllAttempts: false
+  },
   e2e: {
+    specPattern: 'cypress/e2e/**/*.{js,jsx,ts,tsx}',
     setupNodeEvents(on, config) {
-      require('cypress-mochawesome-reporter/plugin')(on);
+      // Plugin removido para evitar erro de resolução
       return config;
-    },
-    specPattern: 'cypress/e2e/**/*.{js,jsx,ts,tsx}'
+    }
   }
 };
