@@ -48,7 +48,11 @@ pipeline {
                     -v \${PWD}:/app -w /app \
                     cypress-ci-cd:${env.BUILD_ID} \
                     npm run cy:report
+                    
                     ls -la cypress/reports/mochawesome-report
+                    echo "Verificando relatório gerado..."
+                    find . -name "mochawesome.html"
+                    test -f cypress/reports/mochawesome-report/mochawesome.html && echo "Relatório gerado com sucesso.
                 """
             }
         }
