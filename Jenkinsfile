@@ -48,6 +48,7 @@ pipeline {
                     -v \${PWD}:/app -w /app \
                     cypress-ci-cd:${env.BUILD_ID} \
                     npm run cy:report
+                    ls -la cypress/reports/mochawesome-report
                 """
             }
         }
