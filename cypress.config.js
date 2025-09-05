@@ -2,7 +2,7 @@ module.exports = {
   reporterOptions: {
     reportDir: 'cypress/reports/mochawesome-report',
     overwrite: false,
-    html: false,
+    html: true,
     json: true,
     charts: true,
     embeddedScreenshots: true,
