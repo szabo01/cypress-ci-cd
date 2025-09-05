@@ -60,6 +60,7 @@ pipeline {
             script {
                 def reportPath = 'cypress/reports/mochawesome-report/mochawesome.html'
                 if (fileExists(reportPath)) {
+                    sh 'ls -la cypress/reports/mochawesome-report'
                     publishHTML([
                         allowMissing: false,
                         alwaysLinkToLastBuild: true,
