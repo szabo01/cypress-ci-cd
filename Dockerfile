@@ -1,10 +1,20 @@
-# Use official Cypress image with Node.js and browsers pre-installed
-FROM cypress/included:15.0.0
+# Use a imagem oficial do Cypress com browsers
+FROM cypress/browsers:node18.12.0-chrome107-ff107-edge
+
+# Definir diretório de trabalho
 WORKDIR /app
-COPY package.json package-lock.json ./
-# Install all dependencies, including devDependencies
-RUN npm install
+
+# Copiar arquivos de dependência
+COPY package*.json ./
+
+# Instalar dependências (incluindo devDependencies para o cypress)
+RUN npm ci
+
+# Copiar todo o código
 COPY . .
-# Mitigate dbus errors
-ENV DBUS_SESSION_BUS_ADDRESS=/dev/null
-RUN apt-get update && apt-get install -y dbus
+
+# Verificar se o Cypress foi instalado corretamente
+RUN npx cypress verify
+
+# Comando padrão para rodar os testes com relatório
+CMD ["npm", "run", "cy:report"]
