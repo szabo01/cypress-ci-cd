@@ -6,7 +6,7 @@ module.exports = {
       return config;
     },
     specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
-    baseUrl: 'http://localhost:3000'
+    // baseUrl: 'http://localhost:3000'
   },
   reporterOptions: {
     reportDir: 'cypress/reports/mochawesome-report',
