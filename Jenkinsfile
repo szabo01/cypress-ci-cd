@@ -28,6 +28,18 @@ pipeline {
             }
         }
 
+        stage('Validate Reporter Package') {
+            steps {
+                echo 'Validando instalação do cypress-mochawesome-reporter...'
+                sh """
+                    docker run --rm \
+                    -v \${PWD}:/app -w /app \
+                    cypress-ci-cd:${env.BUILD_ID} \
+                    ls node_modules/cypress-mochawesome-reporter || exit 1
+                """
+            }
+        }
+
         stage('Run Cypress Tests') {
             steps {
                 echo 'Executando testes Cypress...'
@@ -46,7 +58,6 @@ pipeline {
             echo 'Pipeline finalizado!'
 
             script {
-                // Validação do relatório HTML gerado pelo mochawesome
                 def reportPath = 'cypress/reports/mochawesome-report/mochawesome.html'
                 if (fileExists(reportPath)) {
                     publishHTML([
@@ -59,7 +70,6 @@ pipeline {
                     ])
                 }
 
-                // Arquivamento de vídeos e screenshots
                 if (fileExists('cypress/videos')) {
                     archiveArtifacts artifacts: 'cypress/videos/**/*.mp4', fingerprint: true
                 }
