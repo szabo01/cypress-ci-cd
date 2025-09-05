@@ -7,4 +7,4 @@ RUN npm install
 
 COPY . .
 
-RUN npm install -g cypress-mochawesome-reporter
+RUN npm install --save-dev cypress-mochawesome-reporter
