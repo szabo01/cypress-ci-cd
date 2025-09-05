@@ -47,12 +47,12 @@ pipeline {
                     docker run --rm \
                     -v \${PWD}:/app -w /app \
                     cypress-ci-cd:${env.BUILD_ID} \
-                    npm run cy:report
-                    
-                    ls -la cypress/reports/mochawesome-report
-                    echo "Verificando relatório gerado..."
-                    find . -name "mochawesome.html"
-                    test -f cypress/reports/mochawesome-report/mochawesome.html && echo "Relatório gerado com sucesso".
+                    sh -c '
+                        npm run cy:report
+                        echo "Verificando relatório gerado dentro do container..."
+                        find /app -name "mochawesome.html"
+                        test -f /app/cypress/reports/mochawesome-report/mochawesome.html && echo "Relatório gerado com sucesso." || echo "Relatório não encontrado."
+                    '
                 """
             }
         }
