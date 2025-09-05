@@ -1,14 +1,8 @@
-# Use cypress/included que já tem tudo configurado
-FROM cypress/included:latest
+FROM cypress/included:15.0.0
 
-# Definir diretório de trabalho
 WORKDIR /app
 
-# Copiar arquivos de dependência
 COPY package*.json ./
+RUN npm install
 
-# Instalar dependências
-RUN npm ci
-
-# Copiar todo o código
 COPY . .

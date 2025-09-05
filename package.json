@@ -1,17 +1,12 @@
 {
   "name": "cypress-ci-cd",
   "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "cy:report": "cypress run --browser chrome --headless --reporter cypress-mochawesome-reporter"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "cypress": "^15.0.0",
+  "devDependencies": {
+    "cypress": "^15.1.0",
     "cypress-mochawesome-reporter": "^4.0.2"
   },
-  "devDependencies": {}
+  "scripts": {
+    "test": "npx cypress run --browser electron --headless --reporter cypress-mochawesome-reporter",
+    "cy:report": "npx cypress run --browser electron --headless --reporter cypress-mochawesome-reporter"
+  }
 }

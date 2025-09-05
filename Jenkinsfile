@@ -23,7 +23,7 @@ pipeline {
             steps {
                 echo 'Construindo imagem Docker...'
                 script {
-                    docker.build("cypress-tests:${env.BUILD_ID}")
+                    docker.build("cypress-ci-cd:${env.BUILD_ID}")
                 }
             }
         }
@@ -32,9 +32,9 @@ pipeline {
             steps {
                 echo 'Executando testes Cypress...'
                 sh """
-                    docker run --rm --entrypoint='' \
-                    -v \$PWD:/app -w /app \
-                    cypress-tests:${env.BUILD_ID} \
+                    docker run --rm \
+                    -v \${PWD}:/app -w /app \
+                    cypress-ci-cd:${env.BUILD_ID} \
                     npm run cy:report
                 """
             }
@@ -80,7 +80,7 @@ pipeline {
 
         cleanup {
             echo 'Limpando recursos...'
-            sh "docker rmi cypress-tests:${env.BUILD_ID} || true"
+            sh "docker rmi cypress-ci-cd:${env.BUILD_ID} || true"
         }
     }
 }
