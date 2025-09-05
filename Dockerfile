@@ -12,6 +12,3 @@ RUN npm ci
 
 # Copiar todo o código
 COPY . .
-
-# Comando padrão para rodar os testes com relatório
-CMD ["npm", "run", "cy:report"]
