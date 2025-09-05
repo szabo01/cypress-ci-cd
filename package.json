@@ -6,7 +6,7 @@
     "cypress-mochawesome-reporter": "^4.0.2"
   },
   "scripts": {
-    "test": "npx cypress run --browser electron --headless --reporter cypress-mochawesome-reporter",
+    "test": "npx cypress run --browser chrome --headless --reporter cypress-mochawesome-reporter",
     "cy:report": "npx cypress run --browser electron --headless --reporter cypress-mochawesome-reporter"
   }
 }
