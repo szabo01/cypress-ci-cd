@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "cy:report": "cypress run --reporter cypress-mochawesome-reporter"
+    "cy:report": "cypress run --reporter cypress-mochawesome-reporter --browser chrome --headless --no-sandbox --disable-gpu"
   },
   "keywords": [],
   "author": "",
