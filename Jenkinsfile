@@ -49,6 +49,8 @@ pipeline {
                     cypress-ci-cd:${env.BUILD_ID} \
                     sh -c '
                         npm run cy:report
+                        echo "Movendo relatório para diretório esperado..."
+                        mkdir -p /app/cypress/reports/mochawesome-report
                         mv /app/mochawesome-report/mochawesome.html /app/cypress/reports/mochawesome-report/
                         echo "Verificando relatório gerado dentro do container..."
                         find /app -name "mochawesome.html"
