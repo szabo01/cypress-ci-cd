@@ -49,36 +49,27 @@ pipeline {
                 sh """
                     docker run --rm \
                     -v \${PWD}:/app -w /app \
+                    -e DBUS_SESSION_BUS_ADDRESS=/dev/null \
                     ${env.DOCKER_IMAGE} \
+                    bash -c "mkdir -p cypress/reports/mochawesome-report && chmod -R 777 cypress/reports"
                     npm run cy:report
                 """
                 
                 // Organizar os relatórios
+                echo "Organizando relatórios..."
                 sh """
-                    echo "Organizando relatórios..."
                     mkdir -p cypress/reports/mochawesome-report
-                    
-                    # Verificar se o relatório foi gerado e movê-lo
-                    if [ -f mochawesome-report/mochawesome.html ]; then
-                        mv mochawesome-report/mochawesome.html cypress/reports/mochawesome-report/
-                        echo "Relatório movido com sucesso!"
-                    elif [ -f mochawesome.html ]; then
-                        mv mochawesome.html cypress/reports/mochawesome-report/
-                        echo "Relatório movido da raiz com sucesso!"
+                    echo "Listando arquivos em cypress/reports/mochawesome-report após execução:"    
+                    ls -la cypress/reports/mochawesome-report || echo "Diretório vazio"
+            
+                    if [ -f cypress/reports/mochawesome-report/mochawesome.html ]; then
+                        echo "Relatório encontrado em cypress/reports/mochawesome-report/mochawesome.html"
+                        ls -la cypress/reports/mochawesome-report/
                     else
                         echo "Relatório não encontrado!"
                         find . -name "mochawesome.html" -type f
                         exit 1
-                    fi
-                    
-                    # Verificar se o arquivo final existe
-                    if [ -f cypress/reports/mochawesome-report/mochawesome.html ]; then
-                        echo "Relatório final confirmado em cypress/reports/mochawesome-report/mochawesome.html"
-                        ls -la cypress/reports/mochawesome-report/
-                    else
-                        echo "ERRO: Relatório final não encontrado!"
-                        exit 1
-                    fi
+                    fi                
                 """
             }
         }
