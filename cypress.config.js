@@ -9,7 +9,7 @@ module.exports = defineConfig({
     json: true,
     charts: true,
     embeddedScreenshots: true,
-    inlineAssets: true,
+    inlineAssets: false, // <-- Apenas esta linha deve ser alterada
     saveAllAttempts: false
   },
   e2e: {
