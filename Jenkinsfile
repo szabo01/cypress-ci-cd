@@ -23,28 +23,23 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Construindo imagem Docker...'
-                script {
-                    docker.build(env.DOCKER_IMAGE)
-                }
+                sh "docker build -t ${env.DOCKER_IMAGE} ."
             }
         }
         
         stage('Run Cypress Tests') {
             steps {
                 echo 'Executando testes Cypress...'
-                script {
-                    def container = docker.run("-d -e DBUS_SESSION_BUS_ADDRESS=/dev/null", env.DOCKER_IMAGE)
-                    try {
-                        sh "docker exec ${container.id} npx cypress run"
-                        echo "Copiando relatórios e artefatos para o workspace do Jenkins..."
-                        sh "docker cp ${container.id}:/app/cypress/reports cypress/"
-                        sh "docker cp ${container.id}:/app/cypress/videos cypress/"
-                        sh "docker cp ${container.id}:/app/cypress/screenshots cypress/"
-                    } finally {
-                        echo "Limpando o contêiner..."
-                        sh "docker stop ${container.id}"
-                    }
-                }
+                // Usa um comando shell completo para iniciar e limpar o contêiner
+                sh """
+                    CONTAINER_ID=\$(docker run -d -e DBUS_SESSION_BUS_ADDRESS=/dev/null ${env.DOCKER_IMAGE} tail -f /dev/null)
+                    docker exec \${CONTAINER_ID} npx cypress run
+                    docker cp \${CONTAINER_ID}:/app/cypress/reports cypress/
+                    docker cp \${CONTAINER_ID}:/app/cypress/videos cypress/ || true
+                    docker cp \${CONTAINER_ID}:/app/cypress/screenshots cypress/ || true
+                    docker stop \${CONTAINER_ID}
+                    docker rm \${CONTAINER_ID}
+                """
             }
         }
     }
@@ -85,7 +80,7 @@ pipeline {
                     '''
                 }
             }
-
+            
             script {
                 // Arquivar vídeos se existirem
                 if (fileExists('cypress/videos')) {
