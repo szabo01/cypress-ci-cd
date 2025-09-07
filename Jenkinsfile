@@ -28,49 +28,23 @@ pipeline {
                 }
             }
         }
-
-        stage('Validate Reporter Package') {
-            steps {
-                echo 'Validando instalação do cypress-mochawesome-reporter...'
-                sh """
-                    docker run --rm \
-                    -v \${PWD}:/app -w /app \
-                    ${env.DOCKER_IMAGE} \
-                    ls node_modules/cypress-mochawesome-reporter
-                """
-            }
-        }
-
+        
         stage('Run Cypress Tests') {
             steps {
                 echo 'Executando testes Cypress...'
-                
-                // Executar os testes cypress
-                sh """
-                    docker run --rm \
-                    -v \${PWD}:/app -w /app \
-                    -e DBUS_SESSION_BUS_ADDRESS=/dev/null \
-                    ${env.DOCKER_IMAGE} \
-                    bash -c "mkdir -p cypress/reports/mochawesome-report && chmod -R 777 cypress/reports"
-                    npm run cy:report
-                """
-                
-                // Organizar os relatórios
-                echo "Organizando relatórios..."
-                sh """
-                    mkdir -p cypress/reports/mochawesome-report
-                    echo "Listando arquivos em cypress/reports/mochawesome-report após execução:"    
-                    ls -la cypress/reports/mochawesome-report || echo "Diretório vazio"
-            
-                    if [ -f cypress/reports/mochawesome-report/mochawesome.html ]; then
-                        echo "Relatório encontrado em cypress/reports/mochawesome-report/mochawesome.html"
-                        ls -la cypress/reports/mochawesome-report/
-                    else
-                        echo "Relatório não encontrado!"
-                        find . -name "mochawesome.html" -type f
-                        exit 1
-                    fi                
-                """
+                script {
+                    def container = docker.run("-d -e DBUS_SESSION_BUS_ADDRESS=/dev/null", env.DOCKER_IMAGE)
+                    try {
+                        sh "docker exec ${container.id} npx cypress run"
+                        echo "Copiando relatórios e artefatos para o workspace do Jenkins..."
+                        sh "docker cp ${container.id}:/app/cypress/reports cypress/"
+                        sh "docker cp ${container.id}:/app/cypress/videos cypress/"
+                        sh "docker cp ${container.id}:/app/cypress/screenshots cypress/"
+                    } finally {
+                        echo "Limpando o contêiner..."
+                        sh "docker stop ${container.id}"
+                    }
+                }
             }
         }
     }
@@ -80,19 +54,19 @@ pipeline {
             echo 'Pipeline finalizado!'
 
             script {
-                def reportPath = 'cypress/reports/mochawesome-report/mochawesome.html'
+                def reportPath = 'cypress/reports/mochawesome.html'
                 
                 echo "Verificando existência do relatório em: ${reportPath}"
                 
                 if (fileExists(reportPath)) {
                     echo 'Relatório encontrado! Publicando...'
-                    sh 'ls -la cypress/reports/mochawesome-report/'
+                    sh 'ls -la cypress/reports/'
                     
                     publishHTML([
                         allowMissing: false,
                         alwaysLinkToLastBuild: true,
                         keepAll: true,
-                        reportDir: 'cypress/reports/mochawesome-report',
+                        reportDir: 'cypress/reports',
                         reportFiles: 'mochawesome.html',
                         reportName: 'Cypress Mochawesome Report',
                         reportTitles: 'Relatório de Testes Cypress'
@@ -110,7 +84,9 @@ pipeline {
                         ls -la cypress/reports/ || echo "Diretório reports não existe"
                     '''
                 }
+            }
 
+            script {
                 // Arquivar vídeos se existirem
                 if (fileExists('cypress/videos')) {
                     echo 'Arquivando vídeos dos testes...'
