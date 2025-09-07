@@ -32,7 +32,7 @@ pipeline {
                 echo 'Executando testes Cypress...'
                 // Usa um comando shell completo para iniciar e limpar o contêiner
                 sh """
-                    CONTAINER_ID=\$(docker run -d -m 4g -e DBUS_SESSION_BUS_ADDRESS=/dev/null ${env.DOCKER_IMAGE} tail -f /dev/null)
+                    CONTAINER_ID=\$(docker run -d -m 12g -e DBUS_SESSION_BUS_ADDRESS=/dev/null ${env.DOCKER_IMAGE} tail -f /dev/null)
                     docker exec \${CONTAINER_ID} npx cypress run
                     docker cp \${CONTAINER_ID}:/app/cypress/reports cypress/
                     docker cp \${CONTAINER_ID}:/app/cypress/videos cypress/ || true
