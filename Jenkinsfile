@@ -33,7 +33,7 @@ pipeline {
                 // Aumente a memória compartilhada para 2GB, além de manter a memória geral
                 sh """
                     CONTAINER_ID=\$(docker run -d -m 12g --shm-size=2g -e DBUS_SESSION_BUS_ADDRESS=/dev/null ${env.DOCKER_IMAGE} tail -f /dev/null)
-                    docker exec \${CONTAINER_ID} npx cypress run || true
+                    docker exec \${CONTAINER_ID} npx cypress run
                     docker cp \${CONTAINER_ID}:/app/cypress/reports/mochawesome-report cypress/reports/ || true
                     docker cp \${CONTAINER_ID}:/app/cypress/videos cypress/ || true
                     docker cp \${CONTAINER_ID}:/app/cypress/screenshots cypress/ || true
