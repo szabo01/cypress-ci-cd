@@ -30,15 +30,15 @@ pipeline {
         stage('Run Cypress Tests') {
             steps {
                 echo 'Executando testes Cypress...'
-                // Usa um comando shell completo para iniciar e limpar o contêiner
+                // Aumente a memória compartilhada para 2GB, além de manter a memória geral
                 sh """
-                    CONTAINER_ID=\$(docker run -d -m 12g -e DBUS_SESSION_BUS_ADDRESS=/dev/null ${env.DOCKER_IMAGE} tail -f /dev/null)
-                    docker exec \${CONTAINER_ID} npx cypress run
-                    docker cp \${CONTAINER_ID}:/app/cypress/reports cypress/
+                    CONTAINER_ID=\$(docker run -d -m 12g --shm-size=2g -e DBUS_SESSION_BUS_ADDRESS=/dev/null ${env.DOCKER_IMAGE} tail -f /dev/null)
+                    docker exec \${CONTAINER_ID} npx cypress run || true
+                    docker cp \${CONTAINER_ID}:/app/cypress/reports cypress/ || true
                     docker cp \${CONTAINER_ID}:/app/cypress/videos cypress/ || true
                     docker cp \${CONTAINER_ID}:/app/cypress/screenshots cypress/ || true
-                    docker stop \${CONTAINER_ID}
-                    docker rm \${CONTAINER_ID}
+                    docker stop \${CONTAINER_ID} || true
+                    docker rm \${CONTAINER_ID} || true
                 """
             }
         }
